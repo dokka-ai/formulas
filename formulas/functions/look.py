@@ -218,11 +218,13 @@ FUNCTIONS['MATCH'] = wrap_ufunc(
 )
 
 
-def xlookup(lookup_val, lookup_vec, result_vec=None, match_type=1):
+def xlookup(lookup_val, lookup_vec, result_vec=None, match_type=1, if_not_found=Error.errors['#N/A']):
     result_vec = lookup_vec if result_vec is None else result_vec
     r = xmatch(lookup_val, lookup_vec, match_type)
     if not isinstance(r, XlError):
         r = np.asarray(result_vec[r - 1], object).ravel()[0]
+    else:
+        r = if_not_found
     return r
 
 
@@ -230,6 +232,15 @@ FUNCTIONS['LOOKUP'] = wrap_ufunc(
     xlookup,
     input_parser=lambda val, vec, res=None: (
         val, np.ravel(vec), res if res is None else np.ravel(res)
+    ),
+    args_parser=lambda val, *a: (replace_empty(val),) + a,
+    check_error=lambda *a: get_error(a[:1]), excluded={1, 2}
+)
+
+FUNCTIONS['_XLFN.XLOOKUP'] = wrap_ufunc(
+    xlookup,
+    input_parser=lambda val, vec, res=None, if_not_found=Error.errors['#N/A'], match_type=0, search_type=1: (
+        val, np.ravel(vec), res if res is None else np.ravel(res), match_type, if_not_found
     ),
     args_parser=lambda val, *a: (replace_empty(val),) + a,
     check_error=lambda *a: get_error(a[:1]), excluded={1, 2}
