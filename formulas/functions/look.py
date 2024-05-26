@@ -241,7 +241,7 @@ FUNCTIONS['_XLFN.XLOOKUP'] = wrap_ufunc(
     xlookup,
     input_parser=lambda val, vec, res=None, if_not_found=None, match_type=0, search_type=1: (
         val, np.ravel(vec), res if res is None else np.ravel(res), match_type, if_not_found if
-        if_not_found else Error.errors['#N/A']
+        if_not_found is not None else Error.errors['#N/A']
     ),
     args_parser=lambda val, *a: (replace_empty(val),) + a,
     check_error=lambda *a: get_error(a[:1]), excluded={1, 2}
