@@ -18,8 +18,8 @@ from . import Token
 from ..errors import TokenError
 from .parenthesis import _update_n_args
 
-maxcol = 16384
-maxrow = 1048576
+maxcol = 256
+maxrow = 16384
 
 
 class XlError(sh.Token):
